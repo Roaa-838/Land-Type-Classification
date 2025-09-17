@@ -1,0 +1,23 @@
+# Ignore raw data (too large for GitHub)
+data/raw/*
+*.zip
+*.tif
+*.jpg
+*.png
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# Ignore Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# Ignore environment files
+.env
+.venv/
+*.egg-info/
+
+# Ignore system files
+.DS_Store
+Thumbs.db
