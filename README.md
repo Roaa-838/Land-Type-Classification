@@ -79,6 +79,11 @@ data/
 * `train.csv`, `validation.csv`, `test.csv` → Image splits
 * `label_map.json` → Class mappings
 
+**Csv structures:**
+* `Filename` → the relative path of the image --> use as the *image column*
+* `Label` → numeric class ID (0–9)
+* `ClassName` → the human-readable class (AnnualCrop, Forest, …) -> use as the *label column*
+
 ⚠️ Note: Drop the **index column** when loading CSVs.
 
 🔹 Google Colab Setup
