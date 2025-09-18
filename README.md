@@ -4,7 +4,7 @@
 
 Accurate land type classification is critical for applications such as **agriculture monitoring, urban planning, water resource management, and environmental studies**.
 
-This project builds a **deep learning model** to classify **land cover types in Egypt and similar regions** using **Sentinel-2 satellite imagery**.
+This project builds a **deep learning model** to classify **land cover types in Egypt and similar regions** using **Sentinel-2 satellite imagery**.  
 The goal is to classify input tiles into one of 10 categories:
 
 * 🌾 AnnualCrop
@@ -25,11 +25,10 @@ Users can interact with the model through a **Streamlit web app** that accepts s
 ## 📊 Dataset
 
 ### Context
-
-This project uses the **EuroSAT dataset**, based on Sentinel-2 satellite imagery. The dataset provides labeled land use/land cover images with a **Ground Sampling Distance of 10m**.
+This project uses the **EuroSAT dataset (RGB)** and the **EuroSATallBands dataset (Sentinel-2 spectral bands)**, both based on Sentinel-2 satellite imagery, for land use and land cover classification.  
+Both datasets are too large to store in GitHub. They must be downloaded manually or inside Google Colab.
 
 ### Content
-
 * **EuroSAT (RGB):** JPG images with Red, Green, and Blue bands.
 * **EuroSATallBands:** `.tif` images with all 13 spectral bands from Sentinel-2.
 * Each image is **64×64 pixels**.
@@ -37,12 +36,120 @@ This project uses the **EuroSAT dataset**, based on Sentinel-2 satellite imagery
 **Classes (10):**
 AnnualCrop | Forest | HerbaceousVegetation | Highway | Industrial | Pasture | PermanentCrop | Residential | River | SeaLake
 
+---
+
+### 🔹 Local Setup
+
+* Download the datasets from Kaggle:
+  - [EuroSAT (RGB)](https://www.kaggle.com/datasets/apollo2506/eurosat-dataset)
+  - [EuroSATallBands](https://www.kaggle.com/datasets/apollo2506/eurosatallbands-dataset)
+
+* Extract them into the following folder structure:
+```
+data/
+├── raw/
+│   ├── EuroSAT/
+│   │   ├── AnnualCrop/
+│   │   ├── Forest/
+│   │   ├── HerbaceousVegetation/
+│   │   ├── Highway/
+│   │   ├── Industrial/
+│   │   ├── Pasture/
+│   │   ├── PermanentCrop/
+│   │   ├── Residential/
+│   │   ├── River/
+│   │   ├── SeaLake/
+│   │   ├── train.csv
+│   │   ├── test.csv
+│   │   ├── validation.csv
+│   │   ├── label_map.json
+│   │
+│   ├── EuroSATallBands/
+│   │   ├── *.tif
+│   │   ├── metadata files
+│
+├── interim/       <- intermediate data (cleaned/augmented)
+├── processed/     <- final datasets ready for training
+
+```
+⚠️ data/raw/ and all .zip files are excluded from GitHub via .gitignore.
+
 **Files included:**
 
 * `train.csv`, `validation.csv`, `test.csv` → Image splits
 * `label_map.json` → Class mappings
 
+**Csv structures:**
+* `Filename` → the relative path of the image --> use as the *image column*
+* `Label` → numeric class ID (0–9)
+* `ClassName` → the human-readable class (AnnualCrop, Forest, …) -> use as the *label column*
+
 ⚠️ Note: Drop the **index column** when loading CSVs.
+
+🔹 Google Colab Setup
+Run the following inside your notebook:
+```
+
+⚠️ `data/raw/` and all `.zip` files are excluded from GitHub via `.gitignore`.
+
+**Files included:**
+* `train.csv`, `validation.csv`, `test.csv` → Image splits
+* `label_map.json` → Class mappings
+
+⚠️ Note: Drop the **index column** when loading CSVs.
+
+---
+
+### 🔹 Google Colab Setup
+
+Run the following inside your notebook:
+
+```bash
+# Install Kaggle CLI
+!pip install kaggle
+
+# Upload Kaggle API key (kaggle.json)
+from google.colab import files
+files.upload()  # upload kaggle.json
+
+# Move kaggle.json to the right place
+!mkdir -p ~/.kaggle
+!cp kaggle.json ~/.kaggle/
+!chmod 600 ~/.kaggle/kaggle.json
+
+# Create data folders
+!mkdir -p data/raw data/interim data/processed
+
+# Download EuroSAT (RGB)
+!kaggle datasets download -d apollo2506/eurosat-dataset -p data/raw/
+!unzip -q data/raw/eurosat-dataset.zip -d data/raw/
+
+# Download EuroSATallBands
+!kaggle datasets download -d apollo2506/eurosatallbands-dataset -p data/raw/
+!unzip -q data/raw/eurosatallbands-dataset.zip -d data/raw/
+
+```
+---
+
+### 🔹 Important Notes for Team Members
+
+* Do not push raw datasets to GitHub.
+The .gitignore file already excludes data/raw/ and large files (>100MB).
+```
+# Ignore raw data and large files
+data/raw/
+*.zip
+*.tif
+*.csv
+*.json
+```
+* Only push:
+    * Preprocessing / augmentation scripts
+    * Processed datasets (if small enough, otherwise provide a link)
+    * Model weights (if <100MB, otherwise upload to Google Drive/Dropbox and share the link)
+* This keeps the repository lightweight, professional, and reproducible.
+
+---
 
 ### Acknowledgements
 
@@ -64,6 +171,7 @@ Helber, Patrick; Bischke, Benjamin; Dengel, Andreas; Borth, Damian.
 The project follows this ML pipeline:
 
 ```mermaid
+
 flowchart TD
     A[Data Collection] --> B[Preprocessing & Cleaning]
     B --> C[Exploratory Data Analysis]
@@ -71,6 +179,7 @@ flowchart TD
     D --> E[Model Training (CNN/ResNet/EfficientNet)]
     E --> F[Evaluation (Accuracy, Precision, Recall, F1, Confusion Matrix)]
     F --> G[Deployment via Streamlit Web App]
+
 ```
 
 ### Key Steps:
